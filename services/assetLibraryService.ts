@@ -1,14 +1,14 @@
-import { AssetLibraryItem, Character, ProjectState, Scene } from '../types';
+import { AssetLibraryItem, Character, CharacterVariation, ProjectState, Scene } from '../types';
 
 const generateId = (prefix: string): string => {
   const rand = Math.random().toString(36).slice(2, 6);
   return `${prefix}-${Date.now().toString(36)}-${rand}`;
 };
 
-const cloneCharacterVariation = (variation: Character['variations'][number]) => ({
+const cloneCharacterVariation = (variation: Character['variations'][number]): CharacterVariation => ({
   ...variation,
   id: generateId('var'),
-  status: variation.referenceImage ? 'completed' : 'pending'
+  status: variation.referenceImage ? ('completed' as const) : ('pending' as const)
 });
 
 export const createLibraryItemFromCharacter = (character: Character): AssetLibraryItem => {

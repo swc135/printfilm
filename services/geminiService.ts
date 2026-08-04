@@ -1365,7 +1365,7 @@ export const generateVideo = async (
   const apiBase = getApiBase('video', model);
   const endpoint = resolvedVideoModel?.endpoint || '';
   const isAsyncMode =
-    resolvedVideoModel?.params?.mode === 'async' ||
+    (resolvedVideoModel?.type === 'video' && resolvedVideoModel.params.mode === 'async') ||
     requestModel === 'sora-2' ||
     requestModel === DEFAULT_VIDEO_MODEL_ID ||
     (requestModel.startsWith('doubao-seedance') && endpoint.includes('/v1/videos'));
