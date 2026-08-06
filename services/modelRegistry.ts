@@ -494,7 +494,7 @@ function isLocalOrigin(): boolean {
   return o.startsWith('http://localhost') || o.startsWith('http://127.0.0.1') || o.startsWith('https://localhost') || o.startsWith('https://127.0.0.1');
 }
 
-function isGitccApiBaseUrl(baseUrl: string): boolean {
+function isPrimaryProviderBaseUrl(baseUrl: string): boolean {
   try {
     return new URL(baseUrl).hostname === new URL(PRIMARY_PROVIDER_BASE_URL).hostname;
   } catch {
@@ -514,7 +514,7 @@ export const getApiBaseUrlForModel = (modelId: string): string => {
   let baseUrl = (provider?.baseUrl || BUILTIN_PROVIDERS[0].baseUrl).replace(/\/+$/, '');
 
   // 统一通过 /api-proxy 代理到 Agnes，避免浏览器直接跨域访问 api.agnes-ai.cn
-  if (isGitccApiBaseUrl(baseUrl)) {
+  if (isPrimaryProviderBaseUrl(baseUrl)) {
     return API_PROXY_PATH;
   }
 
