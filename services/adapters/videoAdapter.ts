@@ -190,12 +190,25 @@ const callSoraApi = async (
   
   const { width, height, size } = getSizeFromAspectRatio(aspectRatio);
 
+  // agnes 使用 num_frames + frame_rate 控制时长（seconds 字段会被忽略）
+  const isAgnes = apiModel.startsWith('agnes');
   const requestBody: Record<string, unknown> = {
     model: apiModel,
     prompt: options.prompt,
-    seconds: String(duration),
-    size,
+    width,
+    height,
   };
+
+  if (isAgnes) {
+    // num_frames 遵循 8n+1 规则，且 <= 441
+    const frameRate = 24;
+    const numFrames = Math.min(441, Math.max(81, Math.round(duration * frameRate)));
+    requestBody.num_frames = numFrames;
+    requestBody.frame_rate = frameRate;
+  } else {
+    requestBody.seconds = String(duration);
+    requestBody.size = size;
+  }
 
   if (options.startImage) {
     const cleanBase64 = options.startImage.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
@@ -276,6 +289,7 @@ const callSoraApi = async (
     taskId,
     completedStatus,
     initialVideoId: videoId,
+    provider: isAgnes ? 'agnes' : undefined,
   });
 };
 

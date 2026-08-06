@@ -317,14 +317,41 @@ function buildContentDownloadUrls(
   return urls;
 }
 
+/** agnes 专用下载：使用 /agnesapi?video_id 端点 */
+export async function downloadAgnesVideo(
+  videoId: string,
+  apiKey: string
+): Promise<string> {
+  const res = await fetch(`https://api.agnes-ai.cn/agnesapi?video_id=${encodeURIComponent(videoId)}&model_name=agnes-video-v2.0`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`agnes 视频查询失败 ${res.status}: ${text.slice(0, 200)}`);
+  }
+  const data = await res.json() as Record<string, unknown>;
+  // 顶层 url 字段
+  const url = asString(data.url);
+  if (!url) {
+    console.warn('[agnes] url 字段未找到，响应结构:', JSON.stringify(data).slice(0, 500));
+    throw new Error('视频生成完成但无法获取下载 URL');
+  }
+  return resolveVideoStorageUrl(url);
+}
+
 export async function downloadSoraCompletedVideo(options: {
   apiBase: string;
   apiKey: string;
   taskId: string;
   completedStatus: Record<string, unknown> | null;
   initialVideoId?: string | null;
+  provider?: string;
 }): Promise<string> {
-  const { apiBase, apiKey, taskId, completedStatus } = options;
+  const { apiBase, apiKey, taskId, completedStatus, provider } = options;
   let videoAssetId = options.initialVideoId || null;
 
   const { url: directUrl, status: latestStatus } = await pollStatusForVideoUrl(
@@ -344,6 +371,12 @@ export async function downloadSoraCompletedVideo(options: {
   }
   if (isTaskPlaceholderVideoId(videoAssetId)) {
     videoAssetId = null;
+  }
+
+  // agnes 专用下载路径
+  if (provider === 'agnes' && videoAssetId) {
+    console.log('📥 使用 agnes /agnesapi 端点下载视频');
+    return downloadAgnesVideo(videoAssetId, apiKey);
   }
 
   const contentUrls = buildContentDownloadUrls(apiBase, taskId, videoAssetId, apiKey);

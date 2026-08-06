@@ -1225,12 +1225,24 @@ const generateVideoWithSora2 = async (
   const apiBase = getApiBase('video', modelName);
   
   // Step 1: 创建视频任务
+  const isAgnes = modelName.startsWith('agnes');
   const requestBody: Record<string, unknown> = {
     model: modelName,
     prompt,
-    seconds: String(duration),
-    size: videoSize,
+    width: VIDEO_WIDTH,
+    height: VIDEO_HEIGHT,
   };
+
+  if (isAgnes) {
+    // agnes 使用 num_frames + frame_rate 控制时长
+    const frameRate = 24;
+    const numFrames = Math.min(441, Math.max(81, Math.round(duration * frameRate)));
+    requestBody.num_frames = numFrames;
+    requestBody.frame_rate = frameRate;
+  } else {
+    requestBody.seconds = String(duration);
+    requestBody.size = videoSize;
+  }
 
   // 如果有参考图片，调整尺寸后作为 base64 data URL 传入
   if (startImageBase64) {
@@ -1324,6 +1336,7 @@ const generateVideoWithSora2 = async (
     taskId,
     completedStatus,
     initialVideoId: videoId,
+    provider: isAgnes ? 'agnes' : undefined,
   });
 };
 
