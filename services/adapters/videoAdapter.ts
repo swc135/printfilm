@@ -190,32 +190,26 @@ const callSoraApi = async (
   
   const { width, height, size } = getSizeFromAspectRatio(aspectRatio);
 
-  const formData = new FormData();
-  formData.append('model', apiModel);
-  formData.append('prompt', options.prompt);
-  formData.append('seconds', String(duration));
-  formData.append('size', size);
+  const requestBody: Record<string, unknown> = {
+    model: apiModel,
+    prompt: options.prompt,
+    seconds: String(duration),
+    size,
+  };
 
   if (options.startImage) {
     const cleanBase64 = options.startImage.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
     const resizedBase64 = await resizeImageToSize(cleanBase64, width, height);
-    
-    const byteCharacters = atob(resizedBase64);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: 'image/png' });
-    formData.append('input_reference', blob, 'reference.png');
+    requestBody.image = `data:image/png;base64,${resizedBase64}`;
   }
 
   const createResponse = await fetch(`${apiBase}/v1/videos`, {
     method: 'POST',
     headers: {
+      'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
     },
-    body: formData,
+    body: JSON.stringify(requestBody),
   });
 
   if (!createResponse.ok) {

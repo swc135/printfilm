@@ -235,6 +235,14 @@ async function blobResponseToDataUrl(downloadResponse: Response): Promise<string
   const contentType = downloadResponse.headers.get('content-type') || '';
   if (contentType.includes('video') || contentType.includes('octet-stream')) {
     const videoBlob = await downloadResponse.blob();
+    if (videoBlob.size < 2048) {
+      const tinyText = await videoBlob.text();
+      if (tinyText.startsWith('{') || tinyText.startsWith('<') || tinyText.trim().length === 0) {
+        const fromText = extractAnyVideoDownloadUrl(tinyText);
+        if (fromText) return resolveVideoStorageUrl(fromText);
+        throw new Error(tinyText.trim() || '视频内容为空（文件可能已过期）');
+      }
+    }
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -285,10 +293,12 @@ async function tryDownloadContentUrl(
 function buildContentDownloadUrls(
   apiBase: string,
   taskId: string,
-  videoAssetId: string | null
+  videoAssetId: string | null,
+  apiKey: string
 ): string[] {
   const urls: string[] = [];
   const seen = new Set<string>();
+  const token = encodeURIComponent(apiKey);
 
   const add = (path: string) => {
     const full = `${apiBase}${path}`;
@@ -299,10 +309,10 @@ function buildContentDownloadUrls(
   };
 
   if (videoAssetId && isSoraVideoAssetId(videoAssetId)) {
-    add(`/v1/videos/${encodeVideoPathId(videoAssetId)}/content`);
+    add(`/v1/videos/${encodeVideoPathId(videoAssetId)}/content?token=${token}`);
   }
   if (taskId) {
-    add(`/v1/videos/${encodeVideoPathId(taskId)}/content`);
+    add(`/v1/videos/${encodeVideoPathId(taskId)}/content?token=${token}`);
   }
   return urls;
 }
@@ -336,7 +346,7 @@ export async function downloadSoraCompletedVideo(options: {
     videoAssetId = null;
   }
 
-  const contentUrls = buildContentDownloadUrls(apiBase, taskId, videoAssetId);
+  const contentUrls = buildContentDownloadUrls(apiBase, taskId, videoAssetId, apiKey);
 
   if (contentUrls.length === 0) {
     console.warn('[video] 任务状态样本:', latestStatus || completedStatus);

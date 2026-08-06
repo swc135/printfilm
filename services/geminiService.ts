@@ -1225,39 +1225,30 @@ const generateVideoWithSora2 = async (
   const apiBase = getApiBase('video', modelName);
   
   // Step 1: 创建视频任务
-  const formData = new FormData();
-  formData.append('model', modelName);
-  formData.append('prompt', prompt);
-  formData.append('seconds', String(duration));
-  formData.append('size', videoSize);
-  
-  // 如果有参考图片，调整尺寸后添加到FormData
+  const requestBody: Record<string, unknown> = {
+    model: modelName,
+    prompt,
+    seconds: String(duration),
+    size: videoSize,
+  };
+
+  // 如果有参考图片，调整尺寸后作为 base64 data URL 传入
   if (startImageBase64) {
     const cleanBase64 = startImageBase64.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
-    
-    // 调整图片尺寸以匹配视频尺寸要求
     console.log(`📐 调整参考图片尺寸至 ${VIDEO_WIDTH}x${VIDEO_HEIGHT}...`);
     const resizedBase64 = await resizeImageToSize(cleanBase64, VIDEO_WIDTH, VIDEO_HEIGHT);
-    
-    // 将base64转换为Blob
-    const byteCharacters = atob(resizedBase64);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: 'image/png' });
-    formData.append('input_reference', blob, 'reference.png');
+    requestBody.image = `data:image/png;base64,${resizedBase64}`;
     console.log('✅ 参考图片已调整尺寸并添加');
   }
-  
+
   // 创建任务
   const createResponse = await fetch(`${apiBase}/v1/videos`, {
     method: 'POST',
     headers: {
+      'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`
     },
-    body: formData
+    body: JSON.stringify(requestBody)
   });
   
   if (!createResponse.ok) {
