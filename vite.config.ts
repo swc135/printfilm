@@ -8,9 +8,10 @@ export default defineConfig(({ mode }) => {
       server: {
         port: 3000,
         host: '0.0.0.0',
+        allowedHosts: ['.monkeycode-ai.online'],
         proxy: {
           '/api-proxy': {
-            target: 'https://api.gitcc.com',
+            target: 'https://api.agnes-ai.cn',
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/api-proxy/, ''),
           },
@@ -21,7 +22,7 @@ export default defineConfig(({ mode }) => {
         host: '0.0.0.0',
         proxy: {
           '/api-proxy': {
-            target: 'https://api.gitcc.com',
+            target: 'https://api.agnes-ai.cn',
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/api-proxy/, ''),
           },
@@ -38,8 +39,8 @@ export default defineConfig(({ mode }) => {
         },
       },
       define: {
-        'process.env.API_KEY': JSON.stringify(env.ANTSK_API_KEY),
-        'process.env.ANTSK_API_KEY': JSON.stringify(env.ANTSK_API_KEY)
+        'process.env.API_KEY': JSON.stringify(env.AGNES_API_KEY),
+        'process.env.AGNES_API_KEY': JSON.stringify(env.AGNES_API_KEY)
       },
       resolve: {
         alias: {

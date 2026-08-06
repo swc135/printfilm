@@ -13,28 +13,28 @@ const STORAGE_KEY = 'ai_manga_studio_model_config';
 const LEGACY_STORAGE_KEY = ['big' + 'banana', 'model', 'config'].join('_');
 
 const DEFAULT_PROVIDER: ModelProvider = {
-  id: 'antsk',
-  name: 'GitCC API (api.gitcc.com)',
-  baseUrl: 'https://api.gitcc.com',
+  id: 'agnes',
+  name: 'Agnes AI API (api.agnes-ai.cn)',
+  baseUrl: 'https://api.agnes-ai.cn',
   isDefault: true,
   isBuiltIn: true
 };
 
 const DEFAULT_CONFIG: ModelConfig = {
   chatModel: {
-    providerId: 'antsk',
-    modelName: 'gpt-5.2',
+    providerId: 'agnes',
+    modelName: 'agnes-2.5-flash',
     endpoint: '/v1/chat/completions'
   },
   imageModel: {
-    providerId: 'antsk',
-    modelName: 'qwen-image-2.0',
+    providerId: 'agnes',
+    modelName: 'agnes-image-2.1-flash',
     endpoint: '/v1/images/generations'
   },
   videoModel: {
-    providerId: 'antsk',
+    providerId: 'agnes',
     type: 'sora',
-    modelName: 'doubao-seedance-2-0-fast',
+    modelName: 'agnes-video-v2.0',
     endpoint: '/v1/videos'
   }
 };
@@ -57,22 +57,24 @@ export const loadModelConfig = (): ModelManagerState => {
     const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored) as ModelManagerState;
-      // 確保內建 GitCC 提供商不被舊快取改寫 baseUrl。
-      const hasDefaultProvider = parsed.providers.some(p => p.id === 'antsk');
+      // 確保內建 Agnes 提供商不被舊快取改寫 baseUrl。
+      const hasDefaultProvider = parsed.providers.some(p => p.id === 'agnes');
       if (!hasDefaultProvider) {
         parsed.providers.unshift(DEFAULT_PROVIDER);
       } else {
         parsed.providers = parsed.providers.map(p =>
-          p.id === 'antsk' ? { ...p, baseUrl: DEFAULT_PROVIDER.baseUrl } : p
+          p.id === 'agnes' ? { ...p, baseUrl: DEFAULT_PROVIDER.baseUrl } : p
         );
       }
       const videoModelName = parsed.currentConfig?.videoModel?.modelName || '';
       if (
         videoModelName === 'veo' ||
         videoModelName === 'veo-3.1' ||
-        videoModelName.startsWith('veo_3_1')
+        videoModelName.startsWith('veo_3_1') ||
+        videoModelName === 'doubao-seedance-2-0-fast' ||
+        videoModelName === 'sora-2'
       ) {
-        parsed.currentConfig.videoModel.modelName = 'doubao-seedance-2-0-fast';
+        parsed.currentConfig.videoModel.modelName = 'agnes-video-v2.0';
         parsed.currentConfig.videoModel.type = 'sora';
         parsed.currentConfig.videoModel.endpoint = '/v1/videos';
       }
@@ -152,13 +154,13 @@ export const deleteProvider = (id: string): boolean => {
   state.providers = state.providers.filter(p => p.id !== id);
   
   if (state.currentConfig.chatModel.providerId === id) {
-    state.currentConfig.chatModel.providerId = 'antsk';
+    state.currentConfig.chatModel.providerId = 'agnes';
   }
   if (state.currentConfig.imageModel.providerId === id) {
-    state.currentConfig.imageModel.providerId = 'antsk';
+    state.currentConfig.imageModel.providerId = 'agnes';
   }
   if (state.currentConfig.videoModel.providerId === id) {
-    state.currentConfig.videoModel.providerId = 'antsk';
+    state.currentConfig.videoModel.providerId = 'agnes';
   }
   
   saveModelConfig(state);
@@ -231,7 +233,7 @@ export const getApiBaseUrl = (type: 'chat' | 'image' | 'video' = 'chat'): string
       providerId = config.videoModel.providerId;
       break;
     default:
-      providerId = 'antsk';
+      providerId = 'agnes';
   }
   
   const provider = getProviderById(providerId) || getDefaultProvider();
@@ -294,15 +296,13 @@ export const resetToDefault = (): void => {
 };
 
 export const AVAILABLE_CHAT_MODELS = [
-  { name: 'GPT-5.2', value: 'gpt-5.2', description: '默认推荐，结构化输出稳定' },
-  { name: 'GPT-5.4', value: 'gpt-5.4', description: '创意增强，适合改写与多种切分方案' },
+  { name: 'Agnes 2.5 Flash', value: 'agnes-2.5-flash', description: '默认推荐，结构化输出稳定' },
 ];
 
 export const AVAILABLE_IMAGE_MODELS = [
-  { name: 'Qwen Image 2.0', value: 'qwen-image-2.0', description: '默认推荐，文生图 /v1/images/generations' },
+  { name: 'Agnes Image 2.1 Flash', value: 'agnes-image-2.1-flash', description: '默认推荐，文生图 /v1/images/generations' },
 ];
 
 export const AVAILABLE_VIDEO_MODELS = [
-  { name: '豆包 Seedance 2.0 Fast', value: 'doubao-seedance-2-0-fast', type: 'sora' as const, description: '默认推荐，异步 /v1/videos' },
-  { name: 'Sora-2', value: 'sora-2', type: 'sora' as const, description: '异步模式，支持 4/8/12 秒' },
+  { name: 'Agnes Video V2.0', value: 'agnes-video-v2.0', type: 'sora' as const, description: '默认推荐，异步 /v1/videos' },
 ];

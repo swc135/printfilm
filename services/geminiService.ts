@@ -67,7 +67,7 @@ const checkApiKey = (type: 'chat' | 'image' | 'video' = 'chat', modelId?: string
   return runtimeApiKey;
 };
 
-const DEFAULT_API_BASE = 'https://api.gitcc.com';
+const DEFAULT_API_BASE = 'https://api.agnes-ai.cn';
 
 const SCRIPT_INPUT_MAX_CHARS = 120000;
 const LONG_FORM_MAX_TOKENS = 32768;
@@ -89,7 +89,7 @@ const getDefaultApiBase = (): string => {
   if (typeof window !== 'undefined') {
     const o = window.location.origin;
     const isLocal = o.startsWith('http://localhost') || o.startsWith('http://127.0.0.1') || o.startsWith('https://localhost') || o.startsWith('https://127.0.0.1');
-    if (isLocal && DEFAULT_API_BASE === 'https://api.gitcc.com') return '/api-proxy';
+    if (isLocal && DEFAULT_API_BASE === 'https://api.agnes-ai.cn') return '/api-proxy';
   }
   return DEFAULT_API_BASE;
 };

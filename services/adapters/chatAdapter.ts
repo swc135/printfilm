@@ -149,7 +149,7 @@ export const callChatApi = async (
 
 export const verifyApiKey = async (apiKey: string, baseUrl?: string): Promise<{ success: boolean; message: string }> => {
   try {
-    const url = baseUrl || 'https://api.gitcc.com';
+    const url = baseUrl || 'https://api.agnes-ai.cn';
     
     const response = await fetch(`${url}/v1/chat/completions`, {
       method: 'POST',

@@ -203,7 +203,6 @@ export const callImagesGenerationsApi = async (params: {
       model: params.model,
       prompt: params.prompt,
       n: 1,
-      response_format: 'b64_json',
       size: aspectRatioToImageSize(params.aspectRatio),
     }),
   });

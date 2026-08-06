@@ -18,13 +18,14 @@ import {
   DEPRECATED_BUILTIN_IMAGE_MODEL_IDS,
   DEPRECATED_BUILTIN_VIDEO_MODEL_IDS,
   migrateDeprecatedVideoModelId,
+  DEPEI_PROVIDER_BASE_URL,
   AspectRatio,
   VideoDuration,
 } from '../types/model';
 
 const STORAGE_KEY = 'ai_manga_studio_model_registry';
 const LEGACY_STORAGE_KEY = ['big' + 'banana', 'model', 'registry'].join('_');
-const API_KEY_STORAGE_KEY = 'antsk_api_key';
+const API_KEY_STORAGE_KEY = 'agnes_api_key';
 
 const normalizeBaseUrl = (url: string): string => url.trim().replace(/\/+$/, '').toLowerCase();
 
@@ -495,7 +496,7 @@ function isLocalOrigin(): boolean {
 
 function isGitccApiBaseUrl(baseUrl: string): boolean {
   try {
-    return new URL(baseUrl).hostname === 'api.gitcc.com';
+    return new URL(baseUrl).hostname === new URL(DEPEI_PROVIDER_BASE_URL).hostname;
   } catch {
     return false;
   }
@@ -503,16 +504,16 @@ function isGitccApiBaseUrl(baseUrl: string): boolean {
 
 /**
  * 获取模型对应的 API 基础 URL
- * 供应商使用 GitCC（api.gitcc.com），为了避免 CORS 和便于切换，
- * - 本地开发时：通过 /api-proxy 代理到 GitCC
- * - 线上环境：同样通过 /api-proxy，由后端 Nginx 代理到 GitCC
+ * 供应商使用 Agnes（api.agnes-ai.cn），为了避免 CORS 和便于切换，
+ * - 本地开发时：通过 /api-proxy 代理到 Agnes
+ * - 线上环境：同样通过 /api-proxy，由后端 Nginx 代理到 Agnes
  */
 export const getApiBaseUrlForModel = (modelId: string): string => {
   const model = getModelById(modelId);
   const provider = model ? getProviderById(model.providerId) : BUILTIN_PROVIDERS[0];
   let baseUrl = (provider?.baseUrl || BUILTIN_PROVIDERS[0].baseUrl).replace(/\/+$/, '');
 
-  // 统一通过 /api-proxy 代理到 GitCC，避免浏览器直接跨域访问 api.gitcc.com
+  // 统一通过 /api-proxy 代理到 Agnes，避免浏览器直接跨域访问 api.agnes-ai.cn
   if (isGitccApiBaseUrl(baseUrl)) {
     return API_PROXY_PATH;
   }
