@@ -57,3 +57,12 @@ Entries discovered by the Agent during task execution should follow this format:
   - `npx tsc --noEmit` 通过为 0 错误；`npm run build` 产物约 466 kB main chunk（手动拆分 gemini-service 为独立 chunk 后减小）
   - Vite 开发服务器需配置 `server.allowedHosts: ['.monkeycode-ai.online']` 才能在 monkeycode 预览环境正常访问
   - 代理目标变更（api.gitcc.com → api.agnes-ai.cn）需要同步修改 `vite.config.ts`、`nginx.conf`、`electron/main.cjs` 三处
+  - Logo 使用内联 SVG 组件（`components/Logo.tsx`），无外部图片依赖，favicon 也使用内联 data URL
+
+[Project Knowledge Summary]
+- Date: 2026-08-06
+- Context: 移除 GitCC 残留并集成 Agnes Logo
+- Category: Troubleshooting & Debugging
+- Instructions:
+  - `public/` 目录无图片资源，所有 Logo/favicon 必须内联或引用外部 URL
+  - index.html 中的 og:image、favicon 指向 agnes-ai.cn CDN，如需离线化需改用内联 SVG data URL
