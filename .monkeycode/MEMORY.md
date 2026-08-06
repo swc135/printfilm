@@ -40,16 +40,14 @@ Entries discovered by the Agent during task execution should follow this format:
 
 [Project Knowledge Summary]
 - Date: 2026-08-06
-- Context: 完成 agnes 模型切换，测试文本/图片/视频三个模型的生成与下载
+- Context: 学习 agnes 官方文档后实现完整功能
 - Category: Troubleshooting & Debugging
 - Instructions:
-  - agnes 视频 API（`agnes-video-v2.0`）当前**不提供视频文件下载接口**：
-    - 创建请求使用 JSON 请求体 + `Content-Type: application/json`，参考图用 `image` 字段传 base64 data URL，`seconds` 字段必须为字符串
-    - 任务完成后 `/v1/videos/{task_id}/content?token={apiKey}` 返回 200 但 body 是 `{"detail":"Not Found"}`（Content-Type 伪装成 video/mp4）
-    - `platform-outputs.agnes-ai.space` 对象存储上找不到视频文件（所有候选路径 404 NoSuchKey）
-    - 已验证：视频创建闭环（生成成功、任务 completed），但**下载环节不工作**
-  - 应用内视频生成流程（`videoAdapter.ts` / `geminiService.ts` → `soraVideoResolve.ts` → `downloadSoraCompletedVideo`）已适配 agnes JSON 创建请求，但下载调用会在 token 端点返回错误
-  - 如需完整闭环，必须联系 agnes 团队开放视频下载 API 或使用其他方式（控制台手动复制 URL）
+  - agnes 视频 API 正确下载端点是 `GET /agnesapi?video_id={VIDEO_ID}&model_name={model}`，返回顶层 `url` 字段（非 `metadata.url`）
+  - 视频创建参数使用 `num_frames` + `frame_rate` 控制时长，非 `seconds`
+  - `num_frames` 遵循 `8n+1` 规则，最大 441；推荐：3秒=81帧，5秒=121帧，24fps
+  - agnes 图片 API 使用 `size`（如 "1K"）+ `ratio`（如 "16:9"）参数，`extra_body.response_format` 控制输出格式
+  - 文档地址：https://wiki.agnes-ai.cn/llms.txt
 
 [Project Knowledge Summary]
 - Date: 2026-08-06
@@ -59,12 +57,3 @@ Entries discovered by the Agent during task execution should follow this format:
   - `npx tsc --noEmit` 通过为 0 错误；`npm run build` 产物约 466 kB main chunk（手动拆分 gemini-service 为独立 chunk 后减小）
   - Vite 开发服务器需配置 `server.allowedHosts: ['.monkeycode-ai.online']` 才能在 monkeycode 预览环境正常访问
   - 代理目标变更（api.gitcc.com → api.agnes-ai.cn）需要同步修改 `vite.config.ts`、`nginx.conf`、`electron/main.cjs` 三处
-
-[Project Knowledge Summary]
-- Date: 2026-08-06
-- Context: 图片与文本接口适配
-- Category: Troubleshooting & Debugging
-- Instructions:
-  - agnes 图片接口**不接受** `response_format` 参数（返回 400），默认返回 URL，代码需移除该参数
-  - agnes 文本接口遵循 OpenAI 兼容格式，`/v1/chat/completions` 可用
-  - agnes 视频接口 `seconds` 最小值疑似 5（请求 3 秒被自动改为 5.0），生成消耗约 63s 处理时长/次，限流 1 次/分钟
