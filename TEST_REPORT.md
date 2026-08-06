@@ -65,7 +65,7 @@
 - 启动耗时：271ms
 - 地址：http://localhost:3000/
 - 首页请求：HTTP 200
-- 反向代理 `/api-proxy -> https://api.gitcc.com` 配置生效（vite.config.ts）
+- 反向代理 `/api-proxy -> https://api.agnes-ai.cn` 配置生效（vite.config.ts）
 
 ## 6. 代码健康度抽查
 

@@ -1,7 +1,7 @@
 // Author: forsearch | Updated: 2026-04-30
 import React from 'react';
 import { LayoutDashboard, FileText, Users, Clapperboard, Film, ChevronLeft, ListTree, HelpCircle, Cpu } from 'lucide-react';
-const LOGO_URL = 'https://www.gitcc.com/uploads/-/system/appearance/header_logo/1/gitpp.png';
+const LOGO_URL = 'https://platform-outputs.agnes-ai.cn/logo.png';
 
 interface SidebarProps {
   currentStage: string;
@@ -26,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, proje
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top,_rgba(34,211,238,0.12),_transparent_34%),linear-gradient(180deg,_rgba(15,23,42,0.7),_rgba(2,6,23,0.92))]" />
       <div className="relative p-6 border-b border-white/10">
         <a 
-          href="https://www.gitcc.com/"
+          href="https://www.agnes-ai.cn/"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-3 mb-6 group cursor-pointer"

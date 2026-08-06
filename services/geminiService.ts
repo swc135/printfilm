@@ -925,7 +925,7 @@ Output ONLY the visual prompt text, no explanations.`;
 
 /**
  * 生成图像（Agent 4 & 6）
- * 使用 GitCC 图像生成 API（默认 qwen-image-2.0，Gemini 类走 chat/completions）
+ * 使用 Agnes AI 图像生成 API（默认 agnes-image-2.1-flash）
  * 支持参考图像，确保角色和场景的一致性
  * @param prompt - 图像生成提示词
  * @param referenceImages - 参考图像数组（base64格式），第一张为场景参考，后续为角色参考
@@ -942,7 +942,7 @@ export const generateImage = async (
 ): Promise<string> => {
   const startTime = Date.now();
   
-  // 从 modelRegistry 获取当前激活的图片模型（GitCC 使用 OpenAI 端点 /v1/chat/completions + model 名称）
+  // 从 modelRegistry 获取当前激活的图片模型（Agnes AI 使用 /v1/images/generations 端点）
   const activeImageModel = getActiveModel('image');
   const imageModelId = activeImageModel?.apiModel || activeImageModel?.id || DEFAULT_IMAGE_MODEL_ID;
   const imageEndpoint = activeImageModel?.endpoint;
@@ -1033,7 +1033,7 @@ export const generateImage = async (
       }
     }
 
-  // GitCC Gemini 图片模型要求 content 为数组（multimodal），纯字符串会报 invalid_parameter_error
+  // Agnes AI Gemini 图片模型要求 content 为数组（multimodal），纯字符串会报 invalid_parameter_error
   const messageContent: Array<
     { type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }
   > = [{ type: 'text', text: finalPrompt }];

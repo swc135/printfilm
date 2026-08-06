@@ -78,15 +78,15 @@ const GlobalSettings: React.FC<GlobalSettingsProps> = ({ onRefresh }) => {
           <div className="flex-1">
             <h3 className="text-base font-bold text-white mb-1 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-yellow-400" />
-              推荐使用 GitCC API
+              推荐使用 Agnes AI
             </h3>
             <p className="text-xs text-zinc-400 mb-3 leading-relaxed">
-              文本内置 GPT-5.2、GPT-5.4（可添加自定义）；图像内置 Qwen Image 2.0；视频默认豆包 Seedance 2.0 Fast，另含 Sora-2（可添加自定义）。
-              稳定快速，价格优惠。本开源项目由 GitCC API 提供支持。
+              文本内置 agnes-2.5-flash；图像内置 agnes-image-2.1-flash；视频内置 agnes-video-v2.0。
+              稳定快速，价格优惠。本开源项目由 Agnes AI 提供支持。
             </p>
             <div className="flex items-center gap-3">
               <a 
-                href="https://api.gitcc.com" 
+                href="https://api.agnes-ai.cn"
                 target="_blank" 
                 rel="noreferrer"
                 className="px-4 py-2 bg-cyan-300 text-slate-950 text-xs font-bold rounded-xl hover:bg-cyan-200 transition-colors inline-flex items-center gap-1.5"
@@ -174,7 +174,7 @@ const GlobalSettings: React.FC<GlobalSettingsProps> = ({ onRefresh }) => {
       <div className="p-4 bg-white/[0.045] rounded-2xl border border-white/10">
         <h4 className="text-xs font-bold text-zinc-400 mb-2">配置说明</h4>
         <ul className="text-[10px] text-zinc-600 space-y-1 list-disc list-inside">
-          <li>全局 API Key 用于所有 GitCC API 内置模型的调用</li>
+          <li>全局 API Key 用于所有 Agnes AI 内置模型的调用</li>
           <li>你可以在各模型类别中调整模型参数（温度、Token 等）</li>
           <li>支持添加自定义模型，使用其他 API 服务</li>
           <li>所有配置仅保存在本地浏览器，不会上传到服务器</li>

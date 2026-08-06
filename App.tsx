@@ -14,7 +14,7 @@ import { Save, CheckCircle, X } from 'lucide-react';
 import { saveProjectToDB } from './services/storageService';
 import { setGlobalApiKey } from './services/geminiService';
 import { setLogCallback, clearLogCallback } from './services/renderLogService';
-const LOGO_URL = 'https://www.gitcc.com/uploads/-/system/appearance/header_logo/1/gitpp.png';
+const LOGO_URL = 'https://platform-outputs.agnes-ai.cn/logo.png';
 
 function App() {
   const [project, setProject] = useState<ProjectState | null>(null);
@@ -227,7 +227,7 @@ function App() {
             </p>
           </div>
           <div className="text-xs text-zinc-700">
-            <a href="https://www.gitcc.com/" target="_blank" rel="noreferrer" className="hover:text-indigo-400 transition-colors">
+            <a href="https://www.agnes-ai.cn/" target="_blank" rel="noreferrer" className="hover:text-indigo-400 transition-colors">
               访问产品首页了解更多
             </a>
           </div>

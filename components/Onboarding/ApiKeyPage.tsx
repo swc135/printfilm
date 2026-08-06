@@ -117,7 +117,7 @@ const ApiKeyPage: React.FC<ApiKeyPageProps> = ({
       {/* 获取 Key 链接 */}
       <div className="flex items-center gap-4 mb-8">
         <a 
-          href="https://api.gitcc.com" 
+          href="https://api.agnes-ai.cn" 
           target="_blank" 
           rel="noreferrer" 
           className="text-xs text-cyan-300 hover:underline inline-flex items-center gap-1"
@@ -126,7 +126,7 @@ const ApiKeyPage: React.FC<ApiKeyPageProps> = ({
         </a>
         <span className="text-zinc-700">|</span>
         <a 
-          href="https://www.gitcc.com" 
+          href="https://www.agnes-ai.cn" 
           target="_blank" 
           rel="noreferrer" 
           className="text-xs text-cyan-300 hover:underline inline-flex items-center gap-1"

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-const LOGO_URL = 'https://www.gitcc.com/uploads/-/system/appearance/header_logo/1/gitpp.png';
+const LOGO_URL = 'https://platform-outputs.agnes-ai.cn/logo.png';
 
 interface WelcomePageProps {
   onNext: () => void;

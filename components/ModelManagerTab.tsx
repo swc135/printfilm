@@ -158,15 +158,15 @@ const ModelManagerTab: React.FC<ModelManagerTabProps> = ({ onConfigChange }) => 
           <div className="flex-1">
             <h3 className="text-base font-bold text-white mb-1 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-yellow-400" />
-              推荐使用 GitCC API
+              推荐使用 Agnes AI
             </h3>
             <p className="text-xs text-zinc-400 mb-3 leading-relaxed">
-              支持 GPT-5.1、Gemini-3、Veo 3.1、Sora-2 等多种模型，稳定快速，价格优惠。
-              本开源项目由 GitCC API 提供支持。
+              支持 agnes-2.5-flash、agnes-image-2.1-flash、agnes-video-v2.0 等多种模型，稳定快速，价格优惠。
+              本开源项目由 Agnes AI 提供支持。
             </p>
             <div className="flex items-center gap-3">
               <a 
-                href="https://api.gitcc.com"
+                href="https://api.agnes-ai.cn"
                 target="_blank" 
                 rel="noreferrer"
                 className="px-4 py-2 bg-white text-black text-xs font-bold rounded-lg hover:bg-zinc-200 transition-colors inline-flex items-center gap-1.5"
