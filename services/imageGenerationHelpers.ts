@@ -27,6 +27,24 @@ export const aspectRatioToImageSize = (aspectRatio: AspectRatio): string => {
   return map[aspectRatio] || '1024x1024';
 };
 
+export const aspectRatioToAgnesRatio = (aspectRatio: AspectRatio): string => {
+  const map: Record<AspectRatio, string> = {
+    '16:9': '16:9',
+    '9:16': '9:16',
+    '1:1': '1:1',
+  };
+  return map[aspectRatio] || '1:1';
+};
+
+export const aspectRatioToAgnesSize = (aspectRatio: AspectRatio): string => {
+  // agnes 使用 1K/2K/3K/4K 尺寸档位
+  return '1K';
+};
+
+const isAgnesImageModel = (modelId: string): boolean => {
+  return modelId.toLowerCase().includes('agnes') && modelId.toLowerCase().includes('image');
+};
+
 const pickHttpImageUrl = (value: unknown): string | null => {
   if (typeof value !== 'string') return null;
   const trimmed = value.trim();
@@ -192,6 +210,23 @@ export const callImagesGenerationsApi = async (params: {
   prompt: string;
   aspectRatio: AspectRatio;
 }): Promise<string> => {
+  const isAgnes = isAgnesImageModel(params.model);
+  const body: Record<string, unknown> = {
+    model: params.model,
+    prompt: params.prompt,
+    n: 1,
+  };
+
+  if (isAgnes) {
+    // agnes 使用 size + ratio 参数
+    body.size = aspectRatioToAgnesSize(params.aspectRatio);
+    body.ratio = aspectRatioToAgnesRatio(params.aspectRatio);
+    body.extra_body = { response_format: 'url' };
+  } else {
+    // 其他模型使用精确尺寸
+    body.size = aspectRatioToImageSize(params.aspectRatio);
+  }
+
   const res = await fetch(`${params.apiBase.replace(/\/+$/, '')}/v1/images/generations`, {
     method: 'POST',
     headers: {
@@ -199,12 +234,7 @@ export const callImagesGenerationsApi = async (params: {
       Authorization: `Bearer ${params.apiKey}`,
       Accept: 'application/json',
     },
-    body: JSON.stringify({
-      model: params.model,
-      prompt: params.prompt,
-      n: 1,
-      size: aspectRatioToImageSize(params.aspectRatio),
-    }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
