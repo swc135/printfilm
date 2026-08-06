@@ -1,6 +1,6 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-const LOGO_URL = 'https://platform-outputs.agnes-ai.cn/logo.png';
+import LogoIcon from '../Logo';
 
 interface WelcomePageProps {
   onNext: () => void;
@@ -13,11 +13,7 @@ const WelcomePage: React.FC<WelcomePageProps> = ({ onNext, onSkip }) => {
       {/* 大图区域：Logo + 装饰 */}
       <div className="relative mb-8">
         <div className="absolute -inset-8 bg-gradient-to-r from-cyan-300/20 via-sky-400/20 to-fuchsia-400/20 rounded-full blur-3xl opacity-50"></div>
-        <img 
-          src={LOGO_URL} 
-          alt="AI 漫剧工场" 
-          className="w-24 h-24 relative z-10"
-        />
+        <LogoIcon className="w-24 h-24 relative z-10" />
         <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-400 animate-pulse" />
       </div>
 
