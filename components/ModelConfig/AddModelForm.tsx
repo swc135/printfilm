@@ -18,13 +18,13 @@ import {
   DEFAULT_VIDEO_PARAMS_DOUBAO,
 } from '../../types/model';
 import { getProviders } from '../../services/modelRegistry';
-import { DEPEI_PROVIDER_BASE_URL } from '../../types/model';
+import { PRIMARY_PROVIDER_BASE_URL } from '../../types/model';
 import { useAlert } from '../GlobalAlert';
 
 /** 只允许使用 Agnes AI 提供商（https://api.agnes-ai.cn） */
 const normalizeBaseUrl = (url: string) => url.trim().replace(/\/+$/, '').toLowerCase();
 const getAllowedProviders = () =>
-  getProviders().filter((p) => normalizeBaseUrl(p.baseUrl) === normalizeBaseUrl(DEPEI_PROVIDER_BASE_URL));
+  getProviders().filter((p) => normalizeBaseUrl(p.baseUrl) === normalizeBaseUrl(PRIMARY_PROVIDER_BASE_URL));
 
 interface AddModelFormProps {
   type: ModelType;

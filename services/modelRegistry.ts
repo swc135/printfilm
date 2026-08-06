@@ -18,7 +18,7 @@ import {
   DEPRECATED_BUILTIN_IMAGE_MODEL_IDS,
   DEPRECATED_BUILTIN_VIDEO_MODEL_IDS,
   migrateDeprecatedVideoModelId,
-  DEPEI_PROVIDER_BASE_URL,
+  PRIMARY_PROVIDER_BASE_URL,
   AspectRatio,
   VideoDuration,
 } from '../types/model';
@@ -496,7 +496,7 @@ function isLocalOrigin(): boolean {
 
 function isGitccApiBaseUrl(baseUrl: string): boolean {
   try {
-    return new URL(baseUrl).hostname === new URL(DEPEI_PROVIDER_BASE_URL).hostname;
+    return new URL(baseUrl).hostname === new URL(PRIMARY_PROVIDER_BASE_URL).hostname;
   } catch {
     return false;
   }

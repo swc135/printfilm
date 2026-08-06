@@ -238,13 +238,13 @@ export const BUILTIN_VIDEO_MODELS: VideoModelDefinition[] = [
   },
 ];
 
-export const DEPEI_PROVIDER_BASE_URL = 'https://api.agnes-ai.cn';
+export const PRIMARY_PROVIDER_BASE_URL = 'https://api.agnes-ai.cn';
 
 export const BUILTIN_PROVIDERS: ModelProvider[] = [
   {
     id: 'agnes',
     name: 'Agnes AI API',
-    baseUrl: DEPEI_PROVIDER_BASE_URL,
+    baseUrl: PRIMARY_PROVIDER_BASE_URL,
     isBuiltIn: true,
     isDefault: true,
   },
