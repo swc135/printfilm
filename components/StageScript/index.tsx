@@ -35,6 +35,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
   const [isContinuing, setIsContinuing] = useState(false);
   const [isRewriting, setIsRewriting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [progressPercent, setProgressPercent] = useState<number>(0);
+  const [progressStage, setProgressStage] = useState<string>('');
 
   const [editingCharacterId, setEditingCharacterId] = useState<string | null>(null);
   const [editingCharacterPrompt, setEditingCharacterPrompt] = useState('');
@@ -72,6 +74,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
     }
 
     setIsProcessing(true);
+    setProgressPercent(0);
+    setProgressStage('');
     setError(null);
     try {
       updateProject({
@@ -84,7 +88,13 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
         isParsingScript: true
       });
 
-      const scriptData = await parseScriptToData(localScript, localLanguage, finalModel, finalVisualStyle);
+      const scriptData = await parseScriptToData(localScript, localLanguage, finalModel, finalVisualStyle, (p) => {
+        setProgressPercent(p.percent);
+        if (p.stage === 'structure') setProgressStage(p.phase);
+        else if (p.stage === 'paragraphs') setProgressStage(`正在解析段落 ${p.current}/${p.total}...`);
+        else if (p.stage === 'visual-prompts') setProgressStage(`正在生成视觉提示词 ${p.current}/${p.total}...`);
+        else if (p.stage === 'final') setProgressStage('解析完成');
+      });
       
       scriptData.targetDuration = finalDuration;
       scriptData.language = localLanguage;
@@ -95,7 +105,10 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
         scriptData.title = localTitle;
       }
 
-      const shots = await generateShotList(scriptData, finalModel);
+      const shots = await generateShotList(scriptData, finalModel, (p) => {
+        setProgressPercent(p.percent);
+        setProgressStage(`正在生成分镜场景 ${p.current}/${p.total}...`);
+      });
 
       updateProject({ 
         scriptData, 
@@ -112,6 +125,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
       updateProject({ isParsingScript: false });
     } finally {
       setIsProcessing(false);
+      setProgressPercent(0);
+      setProgressStage('');
     }
   };
 
@@ -344,6 +359,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
             customModelInput={customModelInput}
             customStyleInput={customStyleInput}
             isProcessing={isProcessing}
+            progressPercent={progressPercent}
+            progressStage={progressStage}
             error={error}
             onTitleChange={setLocalTitle}
             onDurationChange={setLocalDuration}

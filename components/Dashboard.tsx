@@ -129,7 +129,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, onShowOnboarding, onShowMod
   });
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.18),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(217,70,239,0.16),_transparent_30%),linear-gradient(135deg,_#07111f_0%,_#120b1f_48%,_#07130f_100%)] text-slate-200 p-6 md:p-10 font-sans selection:bg-cyan-300/25">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(0,113,227,0.07),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(124,77,255,0.07),_transparent_30%),linear-gradient(135deg,_#f5f5f7_0%,_#fafafa_48%,_#f5f5f7_100%)] text-slate-700 p-6 md:p-10 font-sans selection:bg-blue-500/20">
       <div className="max-w-7xl mx-auto flex gap-8">
         <aside className="w-64 flex-shrink-0 hidden md:flex flex-col justify-between rounded-[2rem] border border-white/10 bg-slate-950/50 p-5 backdrop-blur-2xl shadow-2xl shadow-cyan-950/20">
           <div>

@@ -225,6 +225,37 @@ const cleanJsonString = (str: string): string => {
   return cleaned.trim();
 };
 
+/** 有界并发执行：在保证调用间间隔的前提下并发处理任务列表 */
+const mapLimitWithDelay = async <T, R>(
+  items: T[],
+  limit: number,
+  baseDelayMs: number,
+  mapper: (item: T, index: number) => Promise<R>
+): Promise<R[]> => {
+  const results: R[] = new Array(items.length);
+  let cursor = 0;
+  let lastCallAt = 0;
+
+  const worker = async () => {
+    while (true) {
+      const idx = cursor++;
+      if (idx >= items.length) break;
+      const waitMs = Math.max(0, lastCallAt + baseDelayMs - Date.now());
+      if (waitMs > 0) await new Promise((r) => setTimeout(r, waitMs));
+      lastCallAt = Date.now();
+      try {
+        results[idx] = await mapper(items[idx], idx);
+      } catch (e) {
+        results[idx] = undefined as any;
+      }
+    }
+  };
+
+  const workerCount = Math.min(limit, items.length);
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
+  return results;
+};
+
 const chatCompletion = async (prompt: string, model: string = DEFAULT_CHAT_MODEL_ID, temperature: number = 0.7, maxTokens: number = 8192, responseFormat?: 'json_object', timeout: number = 600000): Promise<string> => {
   const apiKey = checkApiKey('chat', model);
   const requestModel = resolveRequestModel('chat', model);
@@ -406,7 +437,9 @@ const chatCompletionStream = async (
  * 第一階段：只抽取結構（title, genre, logline, characters, scenes），避免單次輸出過長被截斷
  * 第二階段：按場景分塊抽取 storyParagraphs，每場景一次請求，再合併
  */
-export const parseScriptToData = async (rawText: string, language: string = '中文', model: string = DEFAULT_CHAT_MODEL_ID, visualStyle: string = 'live-action'): Promise<ScriptData> => {
+export type ParseProgress = { stage: 'structure'; phase: string; percent: number } | { stage: 'paragraphs'; current: number; total: number; percent: number } | { stage: 'visual-prompts'; current: number; total: number; percent: number } | { stage: 'final'; percent: number };
+
+export const parseScriptToData = async (rawText: string, language: string = '中文', model: string = DEFAULT_CHAT_MODEL_ID, visualStyle: string = 'live-action', onProgress?: (p: ParseProgress) => void): Promise<ScriptData> => {
   console.log('📝 parseScriptToData 调用（長文本兩階段）- 模型:', model, '视觉风格:', visualStyle);
   const startTime = Date.now();
   const inputText = rawText.slice(0, SCRIPT_INPUT_MAX_CHARS);
@@ -471,15 +504,22 @@ Output ONLY valid JSON with this structure (no storyParagraphs):
       throw new Error('AI 未能從文本中提取角色或場景。請確保輸入的是完整故事/劇本（含人物與地點）。');
     }
 
+    onProgress?.({ stage: 'structure', phase: '已完成结构提取', percent: 20 });
+
     const genre = parsed.genre || '通用';
 
-    // ---------- 階段 2：按場景分塊抽取 storyParagraphs ----------
+    // ---------- 階段 2：按場景分塊抽取 storyParagraphs（並發執行） ----------
     const storyParagraphs: { id: number; text: string; sceneRefId: string }[] = [];
     let nextId = 1;
 
-    for (let i = 0; i < scenes.length; i++) {
-      const scene = scenes[i];
-      const scenePrompt = `
+    onProgress?.({ stage: 'paragraphs', current: 0, total: scenes.length, percent: 25 });
+
+    const sceneParagraphResults = await mapLimitWithDelay(
+      scenes,
+      3,
+      800,
+      async (scene: any) => {
+        const scenePrompt = `
 Given the script and scene list below, extract ONLY the story paragraphs that belong to this scene.
 Scene to extract for: id="${scene.id}", location="${scene.location}".
 
@@ -492,46 +532,51 @@ Output ONLY a JSON array of objects. Each object: {"id": number, "text": string,
 Use short paragraph texts. Language: ${language}.
 `;
 
-      try {
-        if (i > 0) await new Promise((r) => setTimeout(r, 800));
-        const paraResponse = await retryOperation(() =>
-          chatCompletion(scenePrompt, model, 0.5, PARAGRAPHS_CHUNK_MAX_TOKENS, 'json_object')
-        );
-        const paraCleaned = cleanJsonString(paraResponse);
-        let arr: any[] = [];
         try {
-          const parsedPara = JSON.parse(paraCleaned);
-          arr = Array.isArray(parsedPara)
-            ? parsedPara
-            : Array.isArray(parsedPara.storyParagraphs)
-              ? parsedPara.storyParagraphs
-              : Array.isArray(parsedPara.paragraphs)
-                ? parsedPara.paragraphs
-                : (() => {
-                    const v = Object.values(parsedPara).find((x: any) => Array.isArray(x));
-                    return Array.isArray(v) ? v : [];
-                  })();
-        } catch (_) {
-          // 解析失敗時保留空陣列，該場景段落略過
-          arr = [];
-        }
-        arr.forEach((p: any) => {
-          if (p && (p.text || p.content)) {
-            storyParagraphs.push({
-              id: nextId++,
-              text: typeof p.text === 'string' ? p.text : String(p.content || ''),
-              sceneRefId: String(scene.id)
-            });
+          const paraResponse = await retryOperation(() =>
+            chatCompletion(scenePrompt, model, 0.5, PARAGRAPHS_CHUNK_MAX_TOKENS, 'json_object')
+          );
+          const paraCleaned = cleanJsonString(paraResponse);
+          let arr: any[] = [];
+          try {
+            const parsedPara = JSON.parse(paraCleaned);
+            arr = Array.isArray(parsedPara)
+              ? parsedPara
+              : Array.isArray(parsedPara.storyParagraphs)
+                ? parsedPara.storyParagraphs
+                : Array.isArray(parsedPara.paragraphs)
+                  ? parsedPara.paragraphs
+                  : (() => {
+                      const v = Object.values(parsedPara).find((x: any) => Array.isArray(x));
+                      return Array.isArray(v) ? v : [];
+                    })();
+          } catch (_) {
+            arr = [];
           }
-        });
-      } catch (e) {
-        console.warn(`[parseScriptToData] 場景 ${scene.location} 段落抽取失敗，跳過:`, e);
+          return { sceneId: String(scene.id), list: arr };
+        } catch (e) {
+          console.warn(`[parseScriptToData] 場景 ${scene.location} 段落抽取失敗，跳過:`, e);
+          return { sceneId: String(scene.id), list: [] as any[] };
+        }
       }
-    }
+    );
+
+    sceneParagraphResults.forEach(({ sceneId, list }) => {
+      list.forEach((p: any) => {
+        if (p && (p.text || p.content)) {
+          storyParagraphs.push({
+            id: nextId++,
+            text: typeof p.text === 'string' ? p.text : String(p.content || ''),
+            sceneRefId: sceneId
+          });
+        }
+      });
+    });
 
     // 若按場景抽取結果為空，可選：做一次整體抽取（較長輸出）
     if (storyParagraphs.length === 0 && scenes.length > 0) {
       console.log('[parseScriptToData] 按場景抽取無段落，嘗試單次整體抽取...');
+      onProgress?.({ stage: 'paragraphs', current: scenes.length, total: scenes.length, percent: 60 });
       const fallbackPrompt = `
 Break down the story into paragraphs linked to scenes. Language: ${language}.
 Script:
@@ -561,30 +606,54 @@ Output ONLY valid JSON: { "storyParagraphs": [ {"id": number, "text": "string", 
       }
     }
 
-    // ---------- 生成角色與場景的視覺提示詞 ----------
+    // ---------- 生成角色與場景的視覺提示詞（並發執行） ----------
     console.log('🎨 正在为角色和场景生成视觉提示词...', `风格: ${visualStyle}`);
-    for (let i = 0; i < characters.length; i++) {
-      try {
-        if (i > 0) await new Promise((resolve) => setTimeout(resolve, 1500));
-        const prompts = await generateVisualPrompts('character', characters[i], genre, model, visualStyle, language);
-        characters[i].visualPrompt = prompts.visualPrompt;
-        (characters[i] as any).negativePrompt = prompts.negativePrompt;
-      } catch (e) {
-        console.error(`Failed to generate visual prompt for character ${characters[i].name}:`, e);
+    onProgress?.({ stage: 'visual-prompts', current: 0, total: characters.length + scenes.length, percent: 65 });
+
+    const characterPromptResults = await mapLimitWithDelay(
+      characters,
+      3,
+      1200,
+      async (char: any) => {
+        try {
+          const prompts = await generateVisualPrompts('character', char, genre, model, visualStyle, language);
+          return { index: characters.indexOf(char), prompts };
+        } catch (e) {
+          console.error(`Failed to generate visual prompt for character ${char.name}:`, e);
+          return null;
+        }
       }
-    }
-    for (let i = 0; i < scenes.length; i++) {
-      try {
-        if (i > 0 || characters.length > 0) await new Promise((resolve) => setTimeout(resolve, 1500));
-        const prompts = await generateVisualPrompts('scene', scenes[i], genre, model, visualStyle, language);
-        scenes[i].visualPrompt = prompts.visualPrompt;
-        (scenes[i] as any).negativePrompt = prompts.negativePrompt;
-      } catch (e) {
-        console.error(`Failed to generate visual prompt for scene ${scenes[i].location}:`, e);
+    );
+    characterPromptResults.forEach((r) => {
+      if (!r) return;
+      const char = characters[r.index];
+      char.visualPrompt = r.prompts.visualPrompt;
+      (char as any).negativePrompt = r.prompts.negativePrompt;
+    });
+
+    const scenePromptResults = await mapLimitWithDelay(
+      scenes,
+      3,
+      1200,
+      async (scene: any) => {
+        try {
+          const prompts = await generateVisualPrompts('scene', scene, genre, model, visualStyle, language);
+          return { index: scenes.indexOf(scene), prompts };
+        } catch (e) {
+          console.error(`Failed to generate visual prompt for scene ${scene.location}:`, e);
+          return null;
+        }
       }
-    }
+    );
+    scenePromptResults.forEach((r) => {
+      if (!r) return;
+      const scene = scenes[r.index];
+      scene.visualPrompt = r.prompts.visualPrompt;
+      (scene as any).negativePrompt = r.prompts.negativePrompt;
+    });
 
     console.log('✅ 视觉提示词生成完成！');
+    onProgress?.({ stage: 'visual-prompts', current: characters.length + scenes.length, total: characters.length + scenes.length, percent: 85 });
     const result: ScriptData = {
       title: parsed.title || '未命名剧本',
       genre,
@@ -604,6 +673,7 @@ Output ONLY valid JSON: { "storyParagraphs": [ {"id": number, "text": "string", 
       prompt: structurePrompt.substring(0, 200) + '...',
       duration: Date.now() - startTime
     });
+    onProgress?.({ stage: 'final', percent: 100 });
     return result;
   } catch (error: any) {
     addRenderLogWithTokens({
@@ -628,7 +698,7 @@ Output ONLY valid JSON: { "storyParagraphs": [ {"id": number, "text": "string", 
  * @param model - 使用的AI模型，默认DEFAULT_CHAT_MODEL_ID
  * @returns 返回分镜头列表，每个镜头包含关键帧、镜头运动等信息
  */
-export const generateShotList = async (scriptData: ScriptData, model: string = DEFAULT_CHAT_MODEL_ID): Promise<Shot[]> => {
+export const generateShotList = async (scriptData: ScriptData, model: string = DEFAULT_CHAT_MODEL_ID, onProgress?: (p: { stage: 'shots'; current: number; total: number; percent: number }) => void): Promise<Shot[]> => {
   const overallStartTime = Date.now();
   
   if (!scriptData.scenes || scriptData.scenes.length === 0) {
@@ -791,18 +861,23 @@ export const generateShotList = async (scriptData: ScriptData, model: string = D
     }
   };
 
-  const BATCH_SIZE = 1;
+  const BATCH_SIZE = 2;
   const allShots: Shot[] = [];
-  
-  for (let i = 0; i < scriptData.scenes.length; i += BATCH_SIZE) {
-    if (i > 0) await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    const batch = scriptData.scenes.slice(i, i + BATCH_SIZE);
-    const batchResults = await Promise.all(
-      batch.map((scene, idx) => processScene(scene, i + idx))
-    );
-    batchResults.forEach(shots => allShots.push(...shots));
-  }
+  const totalScenes = scriptData.scenes.length;
+
+  const sceneResults = await mapLimitWithDelay(
+    scriptData.scenes,
+    BATCH_SIZE,
+    1500,
+    async (scene, index) => {
+      const result = await processScene(scene, index);
+      onProgress?.({ stage: 'shots', current: index + 1, total: totalScenes, percent: Math.round(((index + 1) / totalScenes) * 100) });
+      return result;
+    }
+  );
+sceneResults.forEach((shots) => {
+  if (shots) allShots.push(...shots);
+});
 
   if (allShots.length === 0) {
     throw new Error('分镜生成失败：AI返回为空（可能是 JSON 结构不匹配或场景内容未被识别）。请打开控制台查看分镜生成日志。');

@@ -45,6 +45,6 @@ export const STYLES = {
 export const DEFAULTS = {
   duration: '60s',
   language: '中文',
-  model: 'gpt-5.2',
+  model: 'agnes-2.5-flash',
   visualStyle: 'live-action'
 };

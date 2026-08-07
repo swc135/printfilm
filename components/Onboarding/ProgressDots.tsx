@@ -15,8 +15,8 @@ const ProgressDots: React.FC<ProgressDotsProps> = ({ currentPage, onPageChange }
           onClick={() => onPageChange(index)}
           className={`w-2 h-2 rounded-full transition-all duration-300 ${
             index === currentPage
-              ? 'bg-white scale-125'
-              : 'bg-zinc-600 hover:bg-zinc-500'
+              ? 'bg-[#0071e3] scale-125'
+              : 'bg-slate-300 hover:bg-slate-400'
           }`}
           aria-label={`跳转到第 ${index + 1} 页`}
         />

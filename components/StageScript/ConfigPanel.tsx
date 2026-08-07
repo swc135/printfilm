@@ -14,6 +14,8 @@ interface Props {
   customModelInput: string;
   customStyleInput: string;
   isProcessing: boolean;
+  progressPercent: number;
+  progressStage: string;
   error: string | null;
   onTitleChange: (value: string) => void;
   onDurationChange: (value: string) => void;
@@ -36,6 +38,8 @@ const ConfigPanel: React.FC<Props> = ({
   customModelInput,
   customStyleInput,
   isProcessing,
+  progressPercent,
+  progressStage,
   error,
   onTitleChange,
   onDurationChange,
@@ -124,6 +128,20 @@ const ConfigPanel: React.FC<Props> = ({
       </div>
 
       <div className="p-6 border-t border-white/10 bg-slate-950/70">
+        {(isProcessing || progressPercent > 0) && (
+          <div className="mb-4">
+            <div className="flex justify-between text-xs text-cyan-300 mb-1">
+              <span>{progressStage || '处理中...'}</span>
+              <span>{progressPercent}%</span>
+            </div>
+            <div className="w-full bg-slate-700 rounded-full h-2">
+              <div 
+                className="bg-gradient-to-r from-cyan-400 to-blue-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${progressPercent}%` }}
+              ></div>
+            </div>
+          </div>
+        )}
         <button
           onClick={onAnalyze}
           disabled={isProcessing}

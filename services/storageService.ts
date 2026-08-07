@@ -241,7 +241,7 @@ export const createNewProjectState = (): ProjectState => {
     targetDuration: '60s',
     language: '中文',
     visualStyle: 'live-action',
-    shotGenerationModel: 'gpt-5.2',
+    shotGenerationModel: 'agnes-2.5-flash',
     rawScript: `标题：示例剧本
 
 场景 1

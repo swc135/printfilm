@@ -13,6 +13,7 @@ import { ProjectState } from './types';
 import { Save, CheckCircle, X } from 'lucide-react';
 import LogoIcon from './components/Logo';
 import { saveProjectToDB } from './services/storageService';
+import { createNewProjectState } from './services/storageService';
 import { setGlobalApiKey } from './services/geminiService';
 import { setLogCallback, clearLogCallback } from './services/renderLogService';
 
@@ -58,6 +59,7 @@ function App() {
 
   const handleOnboardingQuickStart = (_option: 'script' | 'example') => {
     setShowOnboarding(false);
+    setProject(createNewProjectState());
   };
 
   const handleShowOnboarding = () => {
@@ -214,20 +216,20 @@ function App() {
 
   if (isMobile) {
     return (
-      <div className="h-screen bg-[#050505] flex items-center justify-center p-6">
+      <div className="h-screen bg-[#f5f5f7] flex items-center justify-center p-6">
         <div className="max-w-md text-center space-y-6">
           <LogoIcon className="w-20 h-20 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-white mb-2">AI 漫剧工场</h1>
-          <div className="bg-[#0A0A0A] border border-zinc-800 rounded-xl p-8">
-            <p className="text-zinc-400 text-base leading-relaxed mb-4">
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">AI 漫剧工场</h1>
+          <div className="bg-white border border-slate-200 rounded-xl p-8">
+            <p className="text-slate-600 text-base leading-relaxed mb-4">
               为了获得最佳体验，请使用 PC 端浏览器访问。
             </p>
-            <p className="text-zinc-600 text-sm">
+            <p className="text-slate-400 text-sm">
               本应用需要较大的屏幕空间和桌面级浏览器环境才能正常运行。
             </p>
           </div>
-          <div className="text-xs text-zinc-700">
-            <a href="https://www.agnes-ai.cn/" target="_blank" rel="noreferrer" className="hover:text-indigo-400 transition-colors">
+          <div className="text-xs text-slate-400">
+            <a href="https://www.agnes-ai.cn/" target="_blank" rel="noreferrer" className="hover:text-blue-600 transition-colors">
               访问产品首页了解更多
             </a>
           </div>
@@ -261,7 +263,7 @@ function App() {
   }
 
   return (
-    <div className="flex h-screen bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.16),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(168,85,247,0.16),_transparent_34%),linear-gradient(135deg,_#07111f_0%,_#120b1f_48%,_#07130f_100%)] font-sans text-slate-100 selection:bg-cyan-400/25">
+    <div className="flex h-screen bg-[radial-gradient(circle_at_top_left,_rgba(0,113,227,0.06),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(124,77,255,0.06),_transparent_34%),linear-gradient(135deg,_#f5f5f7_0%,_#fafafa_48%,_#f5f5f7_100%)] font-sans text-slate-800 selection:bg-blue-500/20">
       <Sidebar 
         currentStage={project.stage} 
         setStage={setStage} 
@@ -272,11 +274,11 @@ function App() {
       />
       
       <main className="ml-72 flex-1 h-screen overflow-hidden relative">
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,_transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,_transparent_1px)] bg-[size:48px_48px] opacity-25" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,_transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,_transparent_1px)] bg-[size:48px_48px] opacity-25" />
         {renderStage()}
         
         {showSaveStatus && (
-          <div className="absolute top-4 right-6 pointer-events-none flex items-center gap-2 text-xs font-mono text-cyan-100 bg-slate-950/60 border border-cyan-300/20 px-3 py-1.5 rounded-full backdrop-blur-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200 shadow-lg shadow-cyan-500/10">
+          <div className="absolute top-4 right-6 pointer-events-none flex items-center gap-2 text-xs font-mono text-blue-700 bg-white/80 border border-slate-200 px-3 py-1.5 rounded-full backdrop-blur-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200 shadow-lg shadow-slate-900/10">
              {saveStatus === 'saving' ? (
                <>
                  <Save className="w-3 h-3 animate-pulse" />
@@ -284,7 +286,7 @@ function App() {
                </>
              ) : (
                <>
-                 <CheckCircle className="w-3 h-3 text-emerald-400" />
+                 <CheckCircle className="w-3 h-3 text-green-600" />
                  已保存
                </>
              )}

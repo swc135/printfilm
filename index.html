@@ -35,8 +35,8 @@
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='64' y2='64' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0%25' stop-color='%230891b2'/%3E%3Cstop offset='50%25' stop-color='%237c3aed'/%3E%3Cstop offset='100%25' stop-color='%23059669'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Crect x='8' y='28' width='48' height='28' rx='4' fill='rgba(0,0,0,0.3)' stroke='white' stroke-width='2'/%3E%3Cpath d='M8 28 L20 14 L32 28' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Cpath d='M32 28 L44 14 L56 28' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Cline x1='16' y1='36' x2='48' y2='36' stroke='white' stroke-width='2' stroke-linecap='round' opacity='0.8'/%3E%3Cline x1='16' y1='44' x2='48' y2='44' stroke='white' stroke-width='2' stroke-linecap='round' opacity='0.8'/%3E%3Cline x1='16' y1='52' x2='48' y2='52' stroke='white' stroke-width='2' stroke-linecap='round' opacity='0.8'/%3E%3Ccircle cx='18' cy='20' r='3' fill='%2367e8f9'/%3E%3Ccircle cx='28' cy='12' r='2.5' fill='%23e879f9'/%3E%3Ccircle cx='38' cy='18' r='2' fill='%2334d399'/%3E%3Cline x1='18' y1='20' x2='28' y2='12' stroke='%2367e8f9' stroke-width='1.5' opacity='0.7'/%3E%3Cline x1='28' y1='12' x2='38' y2='18' stroke='%23e879f9' stroke-width='1.5' opacity='0.7'/%3E%3Cline x1='18' y1='20' x2='38' y2='18' stroke='%2334d399' stroke-width='1.5' opacity='0.5'/%3E%3C/svg%3E" />
     
-    <meta name="theme-color" content="#050505" />
-    <meta name="msapplication-TileColor" content="#050505" />
+    <meta name="theme-color" content="#f5f5f7" />
+    <meta name="msapplication-TileColor" content="#f5f5f7" />
     
     <script type="application/ld+json">
     {
@@ -76,24 +76,38 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+      :root {
+        --apple-bg: #f5f5f7;
+        --apple-surface: #ffffff;
+        --apple-surface-2: #e8e8ed;
+        --apple-border: #d2d2d7;
+        --apple-border-light: #e5e5ea;
+        --apple-text: #1d1d1f;
+        --apple-text-secondary: #86868b;
+        --apple-text-tertiary: #a1a1a6;
+        --apple-blue: #0071e3;
+        --apple-blue-hover: #0077ed;
+        --apple-blue-light: #e8f1fd;
+      }
+
       body {
-        font-family: 'Inter', sans-serif;
-        background-color: #050505;
-        color: #e5e5e5;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: #f5f5f7;
+        color: #1d1d1f;
       }
       ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
+        width: 8px;
+        height: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #0a0a0a; 
+        background: transparent; 
       }
       ::-webkit-scrollbar-thumb {
-        background: #333; 
-        border-radius: 0px;
+        background: #c7c7cc; 
+        border-radius: 8px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #555; 
+        background: #aeaeb2; 
       }
       
       .font-mono {
@@ -101,24 +115,109 @@
       }
       
       .glass-panel {
-        background: rgba(20, 20, 20, 0.6);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.72);
+        backdrop-filter: blur(20px) saturate(1.8);
+        border: 1px solid rgba(0, 0, 0, 0.08);
       }
 
       select {
-        color-scheme: dark;
+        color-scheme: light;
       }
 
       select option {
-        background: #0f172a;
-        color: #e0f2fe;
+        background: #ffffff;
+        color: #1d1d1f;
       }
 
       select option:checked {
-        background: #0e7490;
-        color: #ffffff;
+        background: #e8f1fd;
+        color: #0071e3;
       }
+
+      /* ===== 全局深色 → 苹果浅色 覆盖 ===== */
+
+      /* 页面/面板背景 */
+      .bg-slate-950, .bg-slate-900 { background-color: #ffffff !important; }
+      /* 半透明深色面板背景 → 白色调（信息条/头部/占位等） */
+      .bg-slate-950\/25, .bg-slate-950\/35, .bg-slate-950\/45,
+      .bg-slate-950\/50, .bg-slate-950\/55, .bg-slate-950\/60,
+      .bg-slate-950\/85 { background-color: rgba(255,255,255,0.88) !important; }
+      /* 图片占位背景 → 浅灰 */
+      .bg-slate-950\/70 { background-color: #e8e8ed !important; }
+      /* 遮罩层 → 深色半透明 */
+      .bg-slate-950\/75, .bg-slate-950\/80, .bg-slate-950\/90, .bg-slate-950\/95 { background-color: rgba(17,24,39,0.6) !important; }
+      /* 模态框主体（带 cyan 边框的 bg-slate-950/90）→ 白色面板 */
+      .bg-slate-950\/90.border-cyan-200\/15 { background-color: #ffffff !important; }
+
+      /* 半透明白底（卡片）→ 白底 */
+      .bg-white\/\[0\.03\], .bg-white\/\[0\.04\], .bg-white\/\[0\.045\],
+      .bg-white\/\[0\.05\], .bg-white\/\[0\.06\], .bg-white\/\[0\.07\],
+      .bg-white\/5, .bg-white\/10, .bg-white\/15, .bg-white\/20 { background-color: #ffffff !important; }
+
+      /* 主要文字 */
+      .text-white, .text-slate-100, .text-slate-50 { color: #1d1d1f !important; }
+      .text-slate-200 { color: #3a3a3c !important; }
+      .text-slate-300 { color: #6e6e73 !important; }
+      .text-slate-400 { color: #6e6e73 !important; }
+      .text-slate-500 { color: #86868b !important; }
+      .text-slate-600 { color: #a1a1a6 !important; }
+      .text-zinc-200 { color: #3a3a3c !important; }
+      .text-zinc-300 { color: #6e6e73 !important; }
+      .text-zinc-400 { color: #86868b !important; }
+      .text-zinc-500 { color: #86868b !important; }
+      .text-zinc-600 { color: #a1a1a6 !important; }
+      .text-zinc-700 { color: #a1a1a6 !important; }
+      .text-zinc-800 { color: #3a3a3c !important; }
+
+      /* 强调色 cyan → 苹果蓝 */
+      .text-cyan-50, .text-cyan-100, .text-cyan-200, .text-cyan-300, .text-cyan-400 { color: #0071e3 !important; }
+      .bg-cyan-300, .bg-cyan-400 { background-color: #0071e3 !important; }
+      .bg-cyan-200 { background-color: #0077ed !important; }
+      .text-slate-950 { color: #ffffff !important; }
+      .from-cyan-300, .from-cyan-200 { --tw-gradient-from: #0071e3 !important; }
+      .to-sky-400, .to-sky-300 { --tw-gradient-to: #0077ed !important; }
+
+      /* 边框 */
+      .border-white\/10, .border-white\/20, .border-white\/15, .border-white\/5, .border-white\/20 { border-color: rgba(0,0,0,0.1) !important; }
+      .border-zinc-700, .border-zinc-800, .border-zinc-900 { border-color: rgba(0,0,0,0.1) !important; }
+      .border-cyan-300\/10, .border-cyan-300\/20, .border-cyan-300\/25, .border-cyan-300\/30,
+      .border-cyan-300\/40, .border-cyan-300\/50, .border-cyan-300\/60 { border-color: rgba(0,113,227,0.3) !important; }
+      .border-cyan-200\/10, .border-cyan-200\/15, .border-cyan-200\/20, .border-cyan-200\/25,
+      .border-cyan-200\/30, .border-cyan-200\/35, .border-cyan-200\/50 { border-color: rgba(0,113,227,0.22) !important; }
+      .border-cyan-300 { border-color: #0071e3 !important; }
+
+      /* 红色（错误/警告）→ 苹果红 */
+      .text-red-300, .text-red-400, .text-red-500 { color: #ff3b30 !important; }
+      .text-red-100 { color: #d70015 !important; }
+      .bg-red-900\/80, .bg-red-900\/50, .bg-red-900\/30, .bg-red-900\/20, .bg-red-900\/10 { background-color: rgba(255,59,48,0.08) !important; }
+      .bg-red-500\/20, .bg-red-500\/10, .bg-red-500\/5 { background-color: rgba(255,59,48,0.08) !important; }
+      .border-red-900\/50, .border-red-500\/50, .border-red-500\/20, .border-red-400\/40, .border-red-400\/20 { border-color: rgba(255,59,48,0.35) !important; }
+      .bg-red-950\/10 { background-color: rgba(255,59,48,0.08) !important; }
+      .bg-green-500 { background-color: #34c759 !important; }
+      .text-emerald-400 { color: #34c759 !important; }
+      .text-amber-400, .text-amber-500 { color: #ff9500 !important; }
+      .bg-amber-500\/20, .bg-amber-500\/10 { background-color: rgba(255,149,0,0.12) !important; }
+
+      /* 阴影与 ring */
+      .shadow-cyan-500\/10, .shadow-cyan-500\/20, .shadow-cyan-300\/40 { --tw-shadow-color: rgba(0,113,227,0.25) !important; }
+      .shadow-cyan-950\/20, .shadow-cyan-950\/30 { --tw-shadow-color: rgba(0,0,0,0.08) !important; }
+      .ring-cyan-300 { --tw-ring-color: rgba(0,113,227,0.35) !important; }
+
+      /* 发光/微光色块 */
+      .shadow-cyan-500\/10 { --tw-shadow-color: rgba(0,113,227,0.2) !important; }
+
+      /* hover 态 */
+      .hover\:bg-white\/5:hover { background-color: rgba(0,0,0,0.04) !important; }
+      .hover\:border-white\/10:hover { border-color: rgba(0,0,0,0.12) !important; }
+      .hover\:text-cyan-100:hover, .hover\:text-cyan-200:hover { color: #0077ed !important; }
+      .hover\:bg-cyan-300:hover, .hover\:bg-cyan-200:hover { background-color: #0077ed !important; }
+
+      /* 选中态背景（cyan 浅底） */
+      .bg-cyan-300\/5, .bg-cyan-300\/10, .bg-cyan-300\/15, .bg-cyan-300\/20 { background-color: rgba(0,113,227,0.08) !important; }
+
+      /* 进度条渐变 */
+      .from-cyan-300 { --tw-gradient-from: #0071e3 !important; }
+      .to-sky-400 { --tw-gradient-to: #0077ed !important; }
     </style>
   <script type="importmap">
 {

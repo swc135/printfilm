@@ -609,7 +609,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, onApiKeyError 
     
     const visualStyle = project.visualStyle || project.scriptData?.visualStyle || 'live-action';
     const shotGenerationModel =
-      migrateDeprecatedChatModelId(project.shotGenerationModel) || 'gpt-5.2';
+      migrateDeprecatedChatModelId(project.shotGenerationModel) || 'agnes-2.5-flash';
     
     setIsSplittingShot(true);
     

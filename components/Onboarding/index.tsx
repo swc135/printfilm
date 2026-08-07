@@ -3,9 +3,6 @@ import { X } from 'lucide-react';
 import { LEGACY_ONBOARDING_STORAGE_KEY, ONBOARDING_STORAGE_KEY, ONBOARDING_PAGES, TOTAL_PAGES } from './constants';
 import ProgressDots from './ProgressDots';
 import WelcomePage from './WelcomePage';
-import WorkflowPage from './WorkflowPage';
-import HighlightPage from './HighlightPage';
-import ApiKeyPage from './ApiKeyPage';
 import ActionPage from './ActionPage';
 
 interface OnboardingProps {
@@ -71,19 +68,6 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onQuickStart, curre
     switch (currentPage) {
       case ONBOARDING_PAGES.WELCOME:
         return <WelcomePage onNext={handleNext} onSkip={handleSkip} />;
-      case ONBOARDING_PAGES.WORKFLOW:
-        return <WorkflowPage onNext={handleNext} />;
-      case ONBOARDING_PAGES.HIGHLIGHTS:
-        return <HighlightPage onNext={handleNext} />;
-      case ONBOARDING_PAGES.API_KEY:
-        return (
-          <ApiKeyPage 
-            currentApiKey={currentApiKey} 
-            onSaveApiKey={handleSaveApiKey}
-            onNext={handleNext}
-            onSkip={handleSkipApiKey}
-          />
-        );
       case ONBOARDING_PAGES.ACTION:
         return <ActionPage onComplete={handleCompleteOnboarding} onQuickStart={handleQuickStart} />;
       default:

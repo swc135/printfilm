@@ -5,13 +5,10 @@ export const LEGACY_ONBOARDING_STORAGE_KEY = ['big' + 'banana', 'onboarding', 'c
 
 export const ONBOARDING_PAGES = {
   WELCOME: 0,
-  WORKFLOW: 1,
-  HIGHLIGHTS: 2,
-  API_KEY: 3,
-  ACTION: 4,
+  ACTION: 1,
 } as const;
 
-export const TOTAL_PAGES = 5;
+export const TOTAL_PAGES = 2;
 
 // 工作流步骤
 export const WORKFLOW_STEPS = [

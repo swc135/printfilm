@@ -34,7 +34,7 @@ export const DEFAULTS = {
   language: '中文',
   visualStyle: 'live-action',
   genre: 'Cinematic',
-  modelVersion: 'gpt-5.2',
+  modelVersion: 'agnes-2.5-flash',
   batchGenerateDelay: 3000,
 };
 
