@@ -33,7 +33,7 @@ const DEFAULT_CONFIG: ModelConfig = {
   },
   videoModel: {
     providerId: 'agnes',
-    type: 'sora',
+    type: 'async',
     modelName: 'agnes-video-v2.0',
     endpoint: '/v1/videos'
   }
@@ -67,15 +67,9 @@ export const loadModelConfig = (): ModelManagerState => {
         );
       }
       const videoModelName = parsed.currentConfig?.videoModel?.modelName || '';
-      if (
-        videoModelName === 'veo' ||
-        videoModelName === 'veo-3.1' ||
-        videoModelName.startsWith('veo_3_1') ||
-        videoModelName === 'doubao-seedance-2-0-fast' ||
-        videoModelName === 'sora-2'
-      ) {
+      if (videoModelName !== 'agnes-video-v2.0') {
         parsed.currentConfig.videoModel.modelName = 'agnes-video-v2.0';
-        parsed.currentConfig.videoModel.type = 'sora';
+        parsed.currentConfig.videoModel.type = 'async';
         parsed.currentConfig.videoModel.endpoint = '/v1/videos';
       }
       runtimeState = parsed;
@@ -211,7 +205,7 @@ export const getVideoApiUrl = (): string => {
   const provider = getProviderById(config.videoModel.providerId) || getDefaultProvider();
   const baseUrl = provider.baseUrl.replace(/\/+$/, '');
   
-  if (config.videoModel.type === 'sora') {
+  if (config.videoModel.type === 'async') {
     return `${baseUrl}/v1/videos`;
   } else {
     return `${baseUrl}/v1/chat/completions`;
@@ -265,8 +259,8 @@ export const setDefaultVideoDuration = (duration: VideoDuration): void => {
   saveModelConfig(state);
 };
 
-export const getVideoModelType = (): 'sora' | 'veo' => {
-  return getCurrentConfig().videoModel.type;
+export const getVideoModelType = (): 'async' => {
+  return getCurrentConfig().videoModel.type as 'async';
 };
 
 export const getVeoModelName = (hasReferenceImage: boolean, aspectRatio: AspectRatio): string => {
@@ -304,5 +298,5 @@ export const AVAILABLE_IMAGE_MODELS = [
 ];
 
 export const AVAILABLE_VIDEO_MODELS = [
-  { name: 'Agnes Video V2.0', value: 'agnes-video-v2.0', type: 'sora' as const, description: '默认推荐，异步 /v1/videos' },
+  { name: 'Agnes Video V2.0', value: 'agnes-video-v2.0', type: 'async' as const, description: '默认推荐，异步 /v1/videos' },
 ];

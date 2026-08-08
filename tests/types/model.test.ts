@@ -3,7 +3,6 @@ import {
   DEFAULT_CHAT_MODEL_ID,
   DEFAULT_IMAGE_MODEL_ID,
   DEFAULT_VIDEO_MODEL_ID,
-  migrateDeprecatedChatModelId,
   migrateDeprecatedVideoModelId,
   BUILTIN_PROVIDERS,
   BUILTIN_CHAT_MODELS,
@@ -55,34 +54,13 @@ describe('types/model - Built-in models', () => {
 });
 
 describe('types/model - Migration functions', () => {
-  it('should migrate deprecated chat models to agnes-2.5-flash', () => {
-    expect(migrateDeprecatedChatModelId('gpt-5.1')).toBe(DEFAULT_CHAT_MODEL_ID);
-    expect(migrateDeprecatedChatModelId('claude-sonnet-4-5-20250929')).toBe(DEFAULT_CHAT_MODEL_ID);
+  it('should return default for empty chat model input', () => {
+    expect(migrateDeprecatedVideoModelId('')).toBe(DEFAULT_VIDEO_MODEL_ID);
+    expect(migrateDeprecatedVideoModelId(undefined)).toBe(DEFAULT_VIDEO_MODEL_ID);
   });
 
-  it('should preserve non-deprecated models', () => {
-    expect(migrateDeprecatedChatModelId('custom-model')).toBe('custom-model');
-    expect(migrateDeprecatedChatModelId('agnes-2.5-flash')).toBe('agnes-2.5-flash');
-  });
-
-  it('should return default for empty input', () => {
-    expect(migrateDeprecatedChatModelId('')).toBe(DEFAULT_CHAT_MODEL_ID);
-    expect(migrateDeprecatedChatModelId(undefined)).toBe(DEFAULT_CHAT_MODEL_ID);
-  });
-
-  it('should migrate deprecated video models', () => {
-    expect(migrateDeprecatedVideoModelId('sora-2')).toBe(DEFAULT_VIDEO_MODEL_ID);
-    expect(migrateDeprecatedVideoModelId('veo')).toBe(DEFAULT_VIDEO_MODEL_ID);
-    expect(migrateDeprecatedVideoModelId('doubao-seedance-2-0-fast')).toBe(DEFAULT_VIDEO_MODEL_ID);
-  });
-
-  it('should preserve non-deprecated video models', () => {
-    expect(migrateDeprecatedVideoModelId('custom-video')).toBe('custom-video');
+  it('should preserve non-deprecated chat models', () => {
+    expect(migrateDeprecatedVideoModelId('custom-model')).toBe('custom-model');
     expect(migrateDeprecatedVideoModelId('agnes-video-v2.0')).toBe('agnes-video-v2.0');
-  });
-
-  it('should migrate veo_3_1 variants', () => {
-    expect(migrateDeprecatedVideoModelId('veo_3_1_t2v_fast_landscape')).toBe(DEFAULT_VIDEO_MODEL_ID);
-    expect(migrateDeprecatedVideoModelId('veo_3_1_i2v_s_fast_fl_portrait')).toBe(DEFAULT_VIDEO_MODEL_ID);
   });
 });

@@ -17,7 +17,7 @@ import {
   getImageModels,
   getVideoModels,
 } from '../services/modelRegistry';
-import { migrateDeprecatedChatModelId, migrateDeprecatedVideoModelId } from '../types/model';
+import { migrateDeprecatedVideoModelId } from '../types/model';
 
 interface ModelSelectorProps {
   type: ModelType;
@@ -61,11 +61,9 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
 
   const models = getModels();
   const resolvedValue =
-    type === 'chat'
-      ? migrateDeprecatedChatModelId(value)
-      : type === 'video'
-        ? migrateDeprecatedVideoModelId(value)
-        : value;
+    type === 'video'
+      ? migrateDeprecatedVideoModelId(value)
+      : value;
   const selectedModel = models.find(m => m.id === resolvedValue);
   const showOrphanOption =
     (type === 'chat' || type === 'video') &&

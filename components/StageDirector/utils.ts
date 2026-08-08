@@ -103,26 +103,18 @@ export const buildKeyframePromptWithAI = async (
 export const buildVideoPrompt = (
   actionSummary: string,
   cameraMovement: string,
-  videoModel: 'sora-2' | 'veo' | 'veo_3_1_t2v_fast_landscape' | 'veo_3_1_t2v_fast_portrait' | 'veo_3_1_i2v_s_fast_fl_landscape' | 'veo_3_1_i2v_s_fast_fl_portrait' | string,
+  videoModel: string,
   language: string
 ): string => {
   const isChinese = language === '中文' || language === 'Chinese';
-  
-  if (videoModel === 'sora-2' || videoModel.startsWith('doubao-seedance')) {
-    const template = isChinese 
-      ? VIDEO_PROMPT_TEMPLATES.sora2.chinese 
-      : VIDEO_PROMPT_TEMPLATES.sora2.english;
-    
-    return template
-      .replace('{actionSummary}', actionSummary)
-      .replace('{cameraMovement}', cameraMovement)
-      .replace('{language}', language);
-  } else {
-    return VIDEO_PROMPT_TEMPLATES.veo.simple
-      .replace('{actionSummary}', actionSummary)
-      .replace('{cameraMovement}', cameraMovement)
-      .replace('{language}', isChinese ? '中文' : language);
-  }
+  const template = isChinese
+    ? VIDEO_PROMPT_TEMPLATES.agnes.chinese
+    : VIDEO_PROMPT_TEMPLATES.agnes.english;
+
+  return template
+    .replace('{actionSummary}', actionSummary)
+    .replace('{cameraMovement}', cameraMovement)
+    .replace('{language}', language);
 };
 
 export const extractBasePrompt = (fullPrompt: string, fallback: string): string => {

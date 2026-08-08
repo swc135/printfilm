@@ -127,7 +127,7 @@ const ModelManagerTab: React.FC<ModelManagerTabProps> = ({ onConfigChange }) => 
     onConfigChange?.();
   };
 
-  const handleVideoModelChange = (value: string, type: 'sora' | 'veo') => {
+  const handleVideoModelChange = (value: string, type: 'async') => {
     updateVideoModelConfig({ modelName: value, type });
     loadConfig();
     onConfigChange?.();
@@ -362,7 +362,7 @@ const ModelManagerTab: React.FC<ModelManagerTabProps> = ({ onConfigChange }) => 
             value={`${config.videoModel.type}:${config.videoModel.modelName}`}
             onChange={(e) => {
               const [type, value] = e.target.value.split(':');
-              handleVideoModelChange(value, type as 'sora' | 'veo');
+              handleVideoModelChange(value, 'async');
             }}
             className="w-full bg-zinc-900 border border-zinc-800 text-white px-3 py-2.5 text-xs rounded-lg focus:border-indigo-500 focus:outline-none"
           >

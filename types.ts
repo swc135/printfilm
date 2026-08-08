@@ -152,10 +152,10 @@ export interface ImageModelConfig {
 }
 
 export interface VideoModelConfig {
-  providerId: string;
-  type: 'sora' | 'veo';
+  type: 'async';
   modelName: string;
-  endpoint?: string;
+  endpoint: string;
+  providerId: string;
 }
 
 export interface ModelConfig {

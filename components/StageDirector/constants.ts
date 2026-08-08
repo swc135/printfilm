@@ -31,7 +31,7 @@ export const VISUAL_STYLE_PROMPTS: Record<string, string> = {
 };
 
 export const VIDEO_PROMPT_TEMPLATES = {
-  sora2: {
+  agnes: {
     chinese: `从第一张图片（起始帧）到第二张图片（结束帧）生成平滑过渡的视频。
 
 动作描述：{actionSummary}
@@ -43,7 +43,7 @@ export const VIDEO_PROMPT_TEMPLATES = {
 - 视觉风格：电影质感，全程保持一致的光照和色调
 - 细节：保持两帧之间角色和场景的连续性和一致性
 - 语言：配音和字幕使用中文`,
-    
+
     english: `Generate a smooth transition video from the first image (start frame) to the second image (end frame).
 
 Action Description: {actionSummary}
@@ -56,16 +56,9 @@ Technical Requirements:
 - Details: Maintain character and scene continuity and consistency between both frames
 - Language: Use {language} for voiceover and subtitles`
   },
-  
-  veo: {
-    simple: `{actionSummary}
-
-镜头运动：{cameraMovement}
-配音语言：使用{language}配音`
-  }
 };
 
 export const DEFAULTS = {
-  videoModel: 'doubao-seedance-2-0-fast' as const,
+  videoModel: 'agnes-video-v2.0' as const,
   batchGenerateDelay: 3000,
 };

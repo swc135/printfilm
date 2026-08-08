@@ -14,7 +14,6 @@ import {
   DEFAULT_CHAT_MODEL_ID,
   DEFAULT_IMAGE_MODEL_ID,
   DEFAULT_VIDEO_MODEL_ID,
-  DEPRECATED_BUILTIN_CHAT_MODEL_IDS,
   DEPRECATED_BUILTIN_IMAGE_MODEL_IDS,
   DEPRECATED_BUILTIN_VIDEO_MODEL_IDS,
   migrateDeprecatedVideoModelId,
@@ -107,14 +106,10 @@ export const loadRegistry = (): ModelRegistryState => {
           !(
             m.type === 'chat' &&
             m.isBuiltIn &&
-            (DEPRECATED_BUILTIN_CHAT_MODEL_IDS as readonly string[]).includes(m.id)
+            false
           )
       );
-      if (
-        (DEPRECATED_BUILTIN_CHAT_MODEL_IDS as readonly string[]).includes(
-          parsed.activeModels.chat
-        )
-      ) {
+      if (false) {
         parsed.activeModels.chat = DEFAULT_CHAT_MODEL_ID;
       }
 

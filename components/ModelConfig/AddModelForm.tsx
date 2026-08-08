@@ -13,9 +13,7 @@ import {
   VideoModelParams,
   DEFAULT_CHAT_PARAMS,
   DEFAULT_IMAGE_PARAMS,
-  DEFAULT_VIDEO_PARAMS_SORA,
-  DEFAULT_VIDEO_PARAMS_VEO,
-  DEFAULT_VIDEO_PARAMS_DOUBAO,
+  DEFAULT_VIDEO_PARAMS,
 } from '../../types/model';
 import { getProviders } from '../../services/modelRegistry';
 import { PRIMARY_PROVIDER_BASE_URL } from '../../types/model';
@@ -42,7 +40,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({ type, onSave, onCancel }) =
   const [description, setDescription] = useState('');
   const [endpoint, setEndpoint] = useState('');
   const [apiKey, setApiKey] = useState('');
-  const [videoMode, setVideoMode] = useState<'sync' | 'async' | 'doubao'>('async');
+  const [videoMode, setVideoMode] = useState<'async'>('async');
   
   // 固定使用 Agnes AI 提供商，不允许添加其他
   const selectedProviderId = defaultProvider?.id || 'antsk';
@@ -67,13 +65,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({ type, onSave, onCancel }) =
     } else if (type === 'image') {
       params = { ...DEFAULT_IMAGE_PARAMS };
     } else {
-      if (videoMode === 'async') {
-        params = { ...DEFAULT_VIDEO_PARAMS_SORA };
-      } else if (videoMode === 'doubao') {
-        params = { ...DEFAULT_VIDEO_PARAMS_DOUBAO };
-      } else {
-        params = { ...DEFAULT_VIDEO_PARAMS_VEO };
-      }
+      params = { ...DEFAULT_VIDEO_PARAMS };
     }
 
     const model: Omit<ModelDefinition, 'id' | 'isBuiltIn'> = {

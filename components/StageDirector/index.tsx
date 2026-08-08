@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutGrid, Sparkles, Loader2, AlertCircle, Edit2, Film, Video as VideoIcon } from 'lucide-react';
 import { ProjectState, Shot, Keyframe, AspectRatio, VideoDuration } from '../../types';
-import { migrateDeprecatedChatModelId, migrateDeprecatedVideoModelId } from '../../types/model';
+import { migrateDeprecatedVideoModelId } from '../../types/model';
 import { generateImage, generateVideo, generateActionSuggestion, optimizeKeyframePrompt, optimizeBothKeyframes, enhanceKeyframePrompt, splitShotIntoSubShots, rewritePromptForModeration } from '../../services/geminiService';
 import { 
   getRefImagesForShot, 
@@ -608,8 +608,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, onApiKeyError 
     }
     
     const visualStyle = project.visualStyle || project.scriptData?.visualStyle || 'live-action';
-    const shotGenerationModel =
-      migrateDeprecatedChatModelId(project.shotGenerationModel) || 'agnes-2.5-flash';
+    const shotGenerationModel = project.shotGenerationModel || 'agnes-2.5-flash';
     
     setIsSplittingShot(true);
     

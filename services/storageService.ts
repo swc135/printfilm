@@ -1,6 +1,6 @@
 // Author: forsearch | Updated: 2026-04-30
 import { ProjectState, AssetLibraryItem } from '../types';
-import { migrateDeprecatedChatModelId } from '../types/model';
+import { migrateDeprecatedVideoModelId } from '../types/model';
 
 const DB_NAME = 'AiMangaStudioDB';
 const LEGACY_DB_NAME = ['Big', 'Banana', 'DB'].join('');
@@ -113,17 +113,11 @@ export const loadProjectFromDB = async (id: string): Promise<ProjectState> => {
         if (!project.renderLogs) {
           project.renderLogs = [];
         }
-        const migratedModel = migrateDeprecatedChatModelId(project.shotGenerationModel);
-        if (project.shotGenerationModel !== migratedModel) {
-          project.shotGenerationModel = migratedModel;
-        }
+        const migratedModel = project.shotGenerationModel || 'agnes-2.5-flash';
+        project.shotGenerationModel = migratedModel;
         if (project.scriptData?.shotGenerationModel) {
-          const migratedScriptModel = migrateDeprecatedChatModelId(
-            project.scriptData.shotGenerationModel
-          );
-          if (project.scriptData.shotGenerationModel !== migratedScriptModel) {
-            project.scriptData.shotGenerationModel = migratedScriptModel;
-          }
+          const migratedScriptModel = project.scriptData.shotGenerationModel || 'agnes-2.5-flash';
+          project.scriptData.shotGenerationModel = migratedScriptModel;
         }
         resolve(project);
       }

@@ -407,7 +407,7 @@ export const callVideoApi = async (
     mode === 'async' || endpoint.includes('/v1/videos');
 
   const isDoubaoChatApi =
-    mode === 'doubao' ||
+    false ||
     endpoint.includes('/api/v3/contents/generations/tasks') ||
     (apiModel.startsWith('doubao-seedance') &&
       endpoint.includes('/chat/completions'));

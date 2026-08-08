@@ -4,7 +4,7 @@ export type AspectRatio = '16:9' | '9:16' | '1:1';
 
 export type VideoDuration = 4 | 8 | 12;
 
-export type VideoMode = 'sync' | 'async' | 'doubao';
+export type VideoMode = 'async';
 
 export interface ChatModelParams {
   temperature: number;
@@ -113,24 +113,8 @@ export const DEFAULT_IMAGE_PARAMS: ImageModelParams = {
   supportedAspectRatios: ['16:9', '9:16'],
 };
 
-export const DEFAULT_VIDEO_PARAMS_VEO: VideoModelParams = {
-  mode: 'sync',
-  defaultAspectRatio: '16:9',
-  supportedAspectRatios: ['16:9', '9:16'],
-  defaultDuration: 8,
-  supportedDurations: [8],
-};
-
-export const DEFAULT_VIDEO_PARAMS_SORA: VideoModelParams = {
+export const DEFAULT_VIDEO_PARAMS: VideoModelParams = {
   mode: 'async',
-  defaultAspectRatio: '16:9',
-  supportedAspectRatios: ['16:9', '9:16', '1:1'],
-  defaultDuration: 8,
-  supportedDurations: [4, 8, 12],
-};
-
-export const DEFAULT_VIDEO_PARAMS_DOUBAO: VideoModelParams = {
-  mode: 'doubao',
   defaultAspectRatio: '16:9',
   supportedAspectRatios: ['16:9', '9:16', '1:1'],
   defaultDuration: 8,
@@ -139,24 +123,6 @@ export const DEFAULT_VIDEO_PARAMS_DOUBAO: VideoModelParams = {
 
 /** 全局默认文本模型 ID */
 export const DEFAULT_CHAT_MODEL_ID = 'agnes-2.5-flash';
-
-/** 已下架的内置文本模型（加载时迁移到默认模型，自定义模型不受影响） */
-export const DEPRECATED_BUILTIN_CHAT_MODEL_IDS = [
-  'gpt-5.1',
-  'gpt-5.2',
-  'gpt-5.4',
-  'gpt-41',
-  'claude-sonnet-4-5-20250929',
-] as const;
-
-/** 将旧内置模型 ID 迁移为默认；其余 ID（含用户自定义）原样保留 */
-export const migrateDeprecatedChatModelId = (modelId?: string): string => {
-  if (!modelId?.trim()) return DEFAULT_CHAT_MODEL_ID;
-  if ((DEPRECATED_BUILTIN_CHAT_MODEL_IDS as readonly string[]).includes(modelId)) {
-    return DEFAULT_CHAT_MODEL_ID;
-  }
-  return modelId;
-};
 
 export const BUILTIN_CHAT_MODELS: ChatModelDefinition[] = [
   {
@@ -191,35 +157,17 @@ export const BUILTIN_IMAGE_MODELS: ImageModelDefinition[] = [
 ];
 
 /** 已下架的内置图片模型（加载时移除，激活项迁移到默认模型） */
-export const DEPRECATED_BUILTIN_IMAGE_MODEL_IDS = [
-  'qwen-image-2.0',
-  'gemini-3-pro-image-preview',
-] as const;
+export const DEPRECATED_BUILTIN_IMAGE_MODEL_IDS = [] as const;
 
 /** 全局默认视频模型 ID */
 export const DEFAULT_VIDEO_MODEL_ID = 'agnes-video-v2.0';
 
 /** 已下架的内置视频模型（加载时迁移到默认视频模型，自定义模型不受影响） */
-export const DEPRECATED_BUILTIN_VIDEO_MODEL_IDS = [
-  'veo',
-  'veo-3.1',
-  'veo_3_1_t2v_fast_landscape',
-  'veo_3_1_t2v_fast_portrait',
-  'veo_3_1_i2v_s_fast_fl_landscape',
-  'veo_3_1_i2v_s_fast_fl_portrait',
-  'doubao-seedance-2-0-fast',
-  'sora-2',
-] as const;
+export const DEPRECATED_BUILTIN_VIDEO_MODEL_IDS = [] as const;
 
 /** 将旧内置视频模型 ID 迁移为默认视频模型；其余 ID（含用户自定义）原样保留 */
 export const migrateDeprecatedVideoModelId = (modelId?: string): string => {
   if (!modelId?.trim()) return DEFAULT_VIDEO_MODEL_ID;
-  if (
-    modelId.startsWith('veo_3_1') ||
-    (DEPRECATED_BUILTIN_VIDEO_MODEL_IDS as readonly string[]).includes(modelId)
-  ) {
-    return DEFAULT_VIDEO_MODEL_ID;
-  }
   return modelId;
 };
 
@@ -234,7 +182,7 @@ export const BUILTIN_VIDEO_MODELS: VideoModelDefinition[] = [
     description: 'Agnes 视频生成，异步 /v1/videos',
     isBuiltIn: true,
     isEnabled: true,
-    params: { ...DEFAULT_VIDEO_PARAMS_SORA },
+    params: { ...DEFAULT_VIDEO_PARAMS },
   },
 ];
 
